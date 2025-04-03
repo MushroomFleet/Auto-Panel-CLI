@@ -48,12 +48,12 @@ chmod +x comic_panel_composer.py
 
 Basic usage:
 ```
-start-layout.bat path\to\image\folder
+start-layout.bat (defined inside the batch file)
 ```
 
 Advanced usage:
 ```
-start-layout.bat path\to\image\folder --preset presets\3col_preset.json --output output_folder --fit cover
+start-layout.bat (options: path\to\image\folder --preset presets\3col_preset.json --output output_folder --fit cover)
 ```
 
 ### Manual Usage (All Platforms)
@@ -139,10 +139,7 @@ Each cell defines:
 
 1. Double-click `install.bat` to set up the environment (first-time only)
 2. Place your sequential comic panel images in a folder
-3. Double-click `start-layout.bat` and when prompted, type:
-   ```
-   path\to\your\images --preset presets\2col_preset.json
-   ```
+3. Edit as add your paths to the file, then double-click `start-layout.bat` 
 4. Find your composed comic pages in the output directory
 
 ### For All Users:
