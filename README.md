@@ -7,6 +7,7 @@ A Python CLI tool that automatically arranges sequential images into comic book 
 - Takes a folder of sequential images and arranges them into comic panel layouts
 - Supports customizable layout templates via JSON preset files
 - Multiple image fitting options: contain, cover, or stretch
+- Optional overlay images (frames, decorations, etc.) can be applied to each completed page
 - Automatically generates multiple pages if there are more images than cells in the layout
 - Preserves image sequence order
 
@@ -53,7 +54,7 @@ start-layout.bat (defined inside the batch file)
 
 Advanced usage:
 ```
-start-layout.bat (options: path\to\image\folder --preset presets\3col_preset.json --output output_folder --fit cover)
+start-layout.bat (options: path\to\image\folder --preset presets\3col_preset.json --output output_folder --fit cover --overlay frame\overlay_frame.png)
 ```
 
 ### Manual Usage (All Platforms)
@@ -69,7 +70,7 @@ This will use the default 2-column, 3-row layout preset.
 Advanced usage:
 
 ```bash
-python comic_panel_composer.py path/to/image/folder --preset presets/3col_preset.json --output output_folder --fit cover
+python comic_panel_composer.py path/to/image/folder --preset presets/3col_preset.json --output output_folder --fit cover --overlay frame/overlay_frame.png
 ```
 
 ## Parameters
@@ -81,6 +82,7 @@ python comic_panel_composer.py path/to/image/folder --preset presets/3col_preset
   - `contain`: Preserve aspect ratio, fit entire image (may leave empty space)
   - `cover`: Preserve aspect ratio, fill entire cell (may crop image)
   - `stretch`: Stretch image to fill cell (may distort image)
+- `--overlay`: Path to an overlay image to be placed on top of each completed page (optional)
 
 ## Directory Structure
 
@@ -91,9 +93,11 @@ comic-panel-composer/
 ├── requirements.txt        # Python dependencies
 ├── install.bat             # Setup script for Windows
 ├── start-layout.bat        # Launcher script for Windows
-└── presets/
-    ├── 2col_preset.json
-    └── 3col_preset.json
+├── presets/
+│   ├── 2col_preset.json
+│   └── 3col_preset.json
+└── frame/
+    └── 2col_layout_frame1.png  # Example overlay frame
 ```
 
 ## Creating Custom Layouts
@@ -150,6 +154,7 @@ Each cell defines:
    - Load all images from the folder and sort them by filename
    - Arrange them in the specified layout, preserving sequence
    - Create multiple pages if needed
+   - Apply any specified overlay image on top of each completed page
    - Save the composed pages as PNG files with timestamp
 
 ## License

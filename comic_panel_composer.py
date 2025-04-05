@@ -24,6 +24,8 @@ def parse_arguments():
                        help='Output directory (default: image_path with timestamp)')
     parser.add_argument('--fit', choices=['contain', 'cover', 'stretch'], default='contain',
                        help='How to fit images: contain (preserve ratio), cover (fill & crop), stretch')
+    parser.add_argument('--overlay', default=None,
+                       help='Path to overlay image to be placed on top of each completed page')
     
     return parser.parse_args()
 
@@ -124,7 +126,7 @@ def fit_image(img, target_width, target_height, fit_mode='contain'):
         raise ValueError(f"Unknown fit mode: {fit_mode}")
 
 
-def create_comic_pages(image_files, image_path, preset, output_path, fit_mode):
+def create_comic_pages(image_files, image_path, preset, output_path, fit_mode, overlay_path=None):
     """Create comic pages by placing images into the layout cells."""
     page_width = preset['page']['width']
     page_height = preset['page']['height']
@@ -177,6 +179,24 @@ def create_comic_pages(image_files, image_path, preset, output_path, fit_mode):
         output_filename = f"{folder_name}_{timestamp}_page{page_num+1}.png"
         output_filepath = os.path.join(output_path, output_filename)
         
+        # Apply overlay if provided
+        if overlay_path:
+            try:
+                overlay_img = Image.open(overlay_path).convert('RGBA')
+                
+                # Resize overlay if it doesn't match page dimensions
+                if overlay_img.size != (page_width, page_height):
+                    overlay_img = overlay_img.resize((page_width, page_height), Image.LANCZOS)
+                
+                # Convert page to RGBA for compositing
+                page_rgba = page.convert('RGBA')
+                
+                # Composite overlay on top of the page
+                page = Image.alpha_composite(page_rgba, overlay_img).convert('RGB')
+                print(f"Applied overlay to page {page_num+1}")
+            except Exception as e:
+                print(f"Error applying overlay to page {page_num+1}: {e}")
+        
         try:
             os.makedirs(output_path, exist_ok=True)
             page.save(output_filepath)
@@ -205,8 +225,16 @@ def main():
         folder_name = os.path.basename(os.path.normpath(args.image_path))
         args.output = f"{folder_name}_{timestamp}"
     
+    # Check if overlay is provided
+    if args.overlay:
+        if not os.path.isfile(args.overlay):
+            print(f"Warning: Overlay image not found: {args.overlay}")
+            args.overlay = None
+        else:
+            print(f"Using overlay image: {args.overlay}")
+    
     print(f"Creating comic pages with {len(image_files)} images using fit mode: {args.fit}")
-    create_comic_pages(image_files, args.image_path, preset, args.output, args.fit)
+    create_comic_pages(image_files, args.image_path, preset, args.output, args.fit, args.overlay)
     
     print(f"Successfully created comic layout in {args.output}")
 
